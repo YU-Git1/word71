@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fdf8f1;
+  --foreground: #1f2937;
+  --app-bg: linear-gradient(180deg, #fdf8f1 0%, #f7f2e7 52%, #f3ede4 100%);
+  --panel: rgba(255, 255, 255, 0.88);
+  --panel-strong: rgba(255, 255, 255, 0.95);
+  --panel-soft: #fbf8f4;
+  --panel-accent: radial-gradient(
+    circle at top left,
+    rgba(253, 228, 196, 0.95),
+    rgba(247, 242, 231, 0.88) 42%,
+    rgba(255, 255, 255, 0.9) 100%
+  );
+  --border-soft: rgba(255, 255, 255, 0.6);
+  --border-strong: #eadbcf;
+  --text-primary: #1f2937;
+  --text-secondary: #5b4636;
+  --text-muted: #8d6e63;
+  --accent: #d97745;
+  --accent-soft: #fff7ed;
+  --accent-text: #b45309;
+  --button-dark: #1f2937;
+  --button-dark-hover: #374151;
+  --overlay: rgba(20, 24, 31, 0.22);
+  --modal-panel: rgba(255, 253, 249, 0.98);
+  --modal-panel-accent: radial-gradient(
+    circle at top right,
+    rgba(253, 228, 196, 0.2),
+    rgba(255, 253, 249, 0.98) 34%,
+    rgba(247, 242, 236, 0.98) 100%
+  );
+  --modal-section: #f7f2ec;
+  --modal-input: rgba(255, 255, 255, 0.96);
+  --modal-stat: rgba(255, 255, 255, 0.9);
+  --modal-shadow: 0 30px 90px rgba(20, 24, 31, 0.18);
+  --chart-teal: #0f766e;
+  --chart-teal-fill: #93c5fd;
+  --chart-orange: #d97745;
+  --chart-orange-fill: #fdba74;
+  --chart-track: #f1e3d2;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --background: #0f141b;
+  --foreground: #f3f6fb;
+  --app-bg: linear-gradient(180deg, #0f141b 0%, #131a23 52%, #18212d 100%);
+  --panel: rgba(20, 24, 31, 0.88);
+  --panel-strong: rgba(20, 24, 31, 0.96);
+  --panel-soft: #18202b;
+  --panel-accent: radial-gradient(
+    circle at top left,
+    rgba(39, 63, 89, 0.95),
+    rgba(18, 26, 35, 0.9) 42%,
+    rgba(20, 24, 31, 0.96) 100%
+  );
+  --border-soft: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --text-primary: #f3f6fb;
+  --text-secondary: #c7d0df;
+  --text-muted: #9fb0c8;
+  --accent: #7dd3fc;
+  --accent-soft: #11212c;
+  --accent-text: #7dd3fc;
+  --button-dark: #e5eefb;
+  --button-dark-hover: #c9d8ee;
+  --overlay: rgba(5, 8, 12, 0.42);
+  --modal-panel: rgba(18, 26, 35, 0.98);
+  --modal-panel-accent: radial-gradient(
+    circle at top right,
+    rgba(89, 158, 214, 0.18),
+    rgba(18, 26, 35, 0.98) 36%,
+    rgba(15, 21, 29, 0.99) 100%
+  );
+  --modal-section: rgba(22, 31, 42, 0.94);
+  --modal-input: rgba(24, 32, 43, 0.96);
+  --modal-stat: rgba(22, 31, 42, 0.92);
+  --modal-shadow: 0 38px 120px rgba(0, 0, 0, 0.5);
+  --chart-teal: #7dd3fc;
+  --chart-teal-fill: #164e63;
+  --chart-orange: #fdba74;
+  --chart-orange-fill: #7c2d12;
+  --chart-track: #243244;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-noto-sans-sc);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-noto-sans-sc), sans-serif;
+}
+
+a,
+button,
+input,
+select {
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--app-bg);
+}
+
+.surface-panel {
+  border: 1px solid var(--border-soft);
+  background: var(--panel);
+  box-shadow: 0 24px 80px rgba(131, 94, 62, 0.08);
+}
+
+.surface-panel-strong {
+  border: 1px solid var(--border-soft);
+  background: var(--panel-strong);
+  box-shadow: 0 30px 90px rgba(20, 24, 31, 0.18);
+}
+
+.surface-soft {
+  background: var(--panel-soft);
+}
+
+.surface-accent {
+  border: 1px solid var(--border-soft);
+  background: var(--panel-accent);
+  box-shadow: 0 24px 80px rgba(131, 94, 62, 0.12);
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.accent-text {
+  color: var(--accent-text);
+}
+
+.theme-panel {
+  border: 1px solid var(--border-soft);
+  background: var(--panel);
+  box-shadow: 0 24px 80px rgba(131, 94, 62, 0.08);
+}
+
+.theme-panel-accent {
+  border: 1px solid var(--border-soft);
+  background: var(--panel-accent);
+  box-shadow: 0 24px 80px rgba(131, 94, 62, 0.12);
+}
+
+.theme-card {
+  border: 1px solid var(--border-strong);
+  background: var(--panel-strong);
+}
+
+.theme-soft-card {
+  background: var(--panel-soft);
+}
+
+.theme-title {
+  color: var(--text-primary);
+}
+
+.theme-body {
+  color: var(--text-secondary);
+}
+
+.theme-muted {
+  color: var(--text-muted);
+}
+
+.theme-input {
+  border: 1px solid var(--border-strong);
+  background: var(--panel-strong);
+  color: var(--text-primary);
+}
+
+.theme-input::placeholder {
+  color: var(--text-muted);
+}
+
+.theme-button-primary {
+  background: var(--button-dark);
+  color: #fff;
+}
+
+:root[data-theme="dark"] .theme-button-primary {
+  color: #0f141b;
+}
+
+.theme-button-secondary {
+  border: 1px solid var(--border-strong);
+  background: var(--accent-soft);
+  color: var(--text-secondary);
+}
+
+.theme-modal {
+  border: 1px solid var(--border-strong);
+  background-color: var(--modal-panel);
+  background-image: var(--modal-panel-accent);
+  box-shadow: var(--modal-shadow);
+  backdrop-filter: blur(18px);
+}
+
+.theme-modal-section {
+  border: 1px solid var(--border-soft);
+  background: var(--modal-section);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.theme-modal-input {
+  border: 1px solid var(--border-strong);
+  background: var(--modal-input);
+  color: var(--text-primary);
+}
+
+.theme-modal-stat {
+  border: 1px solid var(--border-soft);
+  background: var(--modal-stat);
+}
