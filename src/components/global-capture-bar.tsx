@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { useUserSettings } from "@/hooks/use-user-settings";
 import { useWordLibrary } from "@/hooks/use-word-library";
 import { useFeedback } from "@/hooks/use-feedback";
+import { enrichWord } from "@/lib/dictionary";
 import { buildWordCard } from "@/lib/word-builders";
-import { EnrichedWord } from "@/types/word";
 
 const enabledPaths = ["/words", "/insights"];
 
@@ -42,27 +42,8 @@ export function GlobalCaptureBar() {
 
     try {
       setSubmitting(true);
-
-      const response = await fetch("/api/words/enrich", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          word: nextValue,
-          industry: settings.preferredIndustry,
-        }),
-      });
-
-      const payload = (await response.json()) as
-        | { data: EnrichedWord }
-        | { error: string };
-
-      if (!response.ok || !("data" in payload)) {
-        throw new Error("error" in payload ? payload.error : "生成词卡失败。");
-      }
-
-      addWord(buildWordCard(payload.data));
+      const enriched = await enrichWord(nextValue, settings.preferredIndustry);
+      addWord(buildWordCard(enriched));
       setValue("");
       showFeedback({
         tone: "success",

@@ -23,6 +23,12 @@ npm run dev
 
 打开 [http://localhost:3000](http://localhost:3000)
 
+## GitHub Pages
+
+- 仓库地址： [https://github.com/YU-Git1/word71](https://github.com/YU-Git1/word71)
+- 发布地址： `https://yu-git1.github.io/word71/`
+- 每次推送到 `master` 后，会通过 GitHub Actions 自动重新发布
+
 ## 可用脚本
 
 ```bash
@@ -36,7 +42,7 @@ npm run build
 - 前端框架：Next.js 16 App Router
 - UI：React 19 + Tailwind CSS 4
 - 数据存储：浏览器 `localStorage`
-- 自动查词：服务端路由请求公共词典与翻译接口
+- 自动查词：前端直接请求公共词典与翻译接口
 
 ## 下一步建议
 
