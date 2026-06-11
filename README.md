@@ -43,4 +43,3 @@ npm run build
 - UI：React 19 + Tailwind CSS 4
 - 数据存储：浏览器 `localStorage`
 - 自动查词：前端直接请求公共词典与翻译接口
-
