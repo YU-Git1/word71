@@ -5,77 +5,119 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useReducer,
   type ReactNode,
 } from "react";
+import {
+  readSettingsFromStorage,
+  saveSettingsToStorage,
+  storageKeys,
+} from "@/lib/local-persistence";
 import { IndustryOption, UserSettings } from "@/types/word";
-
-const SETTINGS_KEY = "pro-vocab-settings";
 
 const defaultSettings: UserSettings = {
   preferredIndustry: "uiux",
   appearance: "system",
 };
 
+type UserSettingsState = {
+  settings: UserSettings;
+  lastSavedAt: string | null;
+  recoveredFromBackup: boolean;
+};
+
+type UserSettingsAction =
+  | { type: "set-industry"; preferredIndustry: IndustryOption }
+  | { type: "set-appearance"; appearance: UserSettings["appearance"] }
+  | { type: "sync"; payload: UserSettingsState };
+
 type UserSettingsContextValue = {
   settings: UserSettings;
+  lastSavedAt: string | null;
+  recoveredFromBackup: boolean;
   setPreferredIndustry: (preferredIndustry: IndustryOption) => void;
   setAppearance: (appearance: UserSettings["appearance"]) => void;
 };
 
 const UserSettingsContext = createContext<UserSettingsContextValue | null>(null);
 
-function readSettings() {
-  if (typeof window === "undefined") {
-    return defaultSettings;
+function createLocalSettingsState(settings: UserSettings): UserSettingsState {
+  return {
+    settings,
+    lastSavedAt: new Date().toISOString(),
+    recoveredFromBackup: false,
+  };
+}
+
+function userSettingsReducer(
+  state: UserSettingsState,
+  action: UserSettingsAction,
+): UserSettingsState {
+  if (action.type === "sync") {
+    return action.payload;
   }
 
-  const raw = window.localStorage.getItem(SETTINGS_KEY);
-
-  if (!raw) {
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(defaultSettings));
-    return defaultSettings;
+  if (action.type === "set-industry") {
+    return createLocalSettingsState({
+      ...state.settings,
+      preferredIndustry: action.preferredIndustry,
+    });
   }
 
-  try {
-    return {
-      ...defaultSettings,
-      ...(JSON.parse(raw) as Partial<UserSettings>),
-    };
-  } catch {
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(defaultSettings));
-    return defaultSettings;
-  }
+  return createLocalSettingsState({
+    ...state.settings,
+    appearance: action.appearance,
+  });
 }
 
 export function UserSettingsProvider({ children }: { children: ReactNode }) {
-  const [settings, setSettings] = useState<UserSettings>(() => readSettings());
+  const [state, dispatch] = useReducer(userSettingsReducer, undefined, () =>
+    readSettingsFromStorage(defaultSettings),
+  );
+  const { settings, lastSavedAt, recoveredFromBackup } = state;
 
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
-    window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    saveSettingsToStorage(settings);
   }, [settings]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== storageKeys.settings || !event.newValue) {
+        return;
+      }
+
+      const nextState = readSettingsFromStorage(defaultSettings);
+      dispatch({ type: "sync", payload: nextState });
+    };
+
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
 
   const value = useMemo<UserSettingsContextValue>(
     () => ({
       settings,
+      lastSavedAt,
+      recoveredFromBackup,
       setPreferredIndustry: (preferredIndustry) => {
-        setSettings((current) => ({
-          ...current,
-          preferredIndustry,
-        }));
+        dispatch({ type: "set-industry", preferredIndustry });
       },
       setAppearance: (appearance) => {
-        setSettings((current) => ({
-          ...current,
-          appearance,
-        }));
+        dispatch({ type: "set-appearance", appearance });
       },
     }),
-    [settings],
+    [lastSavedAt, recoveredFromBackup, settings],
   );
 
   return (

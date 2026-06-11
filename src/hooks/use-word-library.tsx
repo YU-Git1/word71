@@ -6,27 +6,22 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useReducer,
   type ReactNode,
 } from "react";
-import { seedWords } from "@/lib/seed-words";
-import { IndustryOption, UserSettings, WordCard } from "@/types/word";
-
-const STORAGE_KEY = "pro-vocab-library";
-const BACKUP_KEY = "pro-vocab-library-backup";
-const VALID_INDUSTRIES: IndustryOption[] = [
-  "general",
-  "uiux",
-  "frontend",
-  "product",
-  "marketing",
-  "business",
-];
+import {
+  readWordsFromStorage,
+  saveWordsToStorage,
+  storageKeys,
+} from "@/lib/local-persistence";
+import { UserSettings, WordCard } from "@/types/word";
 
 type WordLibraryContextValue = {
   words: WordCard[];
   ready: boolean;
   categories: string[];
+  lastSavedAt: string | null;
+  recoveredFromBackup: boolean;
   addWord: (word: WordCard) => void;
   deleteWord: (id: string) => void;
   hasWord: (word: string) => boolean;
@@ -37,6 +32,18 @@ type WordLibraryContextValue = {
 
 const WordLibraryContext = createContext<WordLibraryContextValue | null>(null);
 
+type WordLibraryState = {
+  words: WordCard[];
+  lastSavedAt: string | null;
+  recoveredFromBackup: boolean;
+};
+
+type WordLibraryAction =
+  | { type: "add"; word: WordCard }
+  | { type: "delete"; id: string }
+  | { type: "mark-reviewed"; id: string }
+  | { type: "sync"; payload: WordLibraryState };
+
 function sortWords(words: WordCard[]) {
   return [...words].sort(
     (left, right) =>
@@ -44,71 +51,78 @@ function sortWords(words: WordCard[]) {
   );
 }
 
-function normalizeWord(partial: Partial<WordCard>, index: number): WordCard {
-  const now = new Date().toISOString();
-  const fallbackWord = partial.word?.trim() || `word-${index + 1}`;
-  const normalizedIndustry = VALID_INDUSTRIES.includes(
-    partial.industry as IndustryOption,
-  )
-    ? (partial.industry as IndustryOption)
-    : "general";
-
+function createLocalState(words: WordCard[]): WordLibraryState {
   return {
-    id: partial.id || `migrated-${fallbackWord}-${index}`,
-    word: fallbackWord,
-    phonetic: partial.phonetic || "/-/",
-    partOfSpeech: partial.partOfSpeech || "unknown / 未分类",
-    meaningZh: partial.meaningZh || "暂未生成释义。",
-    exampleSentence: partial.exampleSentence || "No example available yet.",
-    category: partial.category || "未分类",
-    industry: normalizedIndustry,
-    audioUrl: partial.audioUrl,
-    createdAt: partial.createdAt || now,
-    updatedAt: partial.updatedAt || partial.createdAt || now,
-    reviewCount: typeof partial.reviewCount === "number" ? partial.reviewCount : 0,
-    lastReviewedAt: partial.lastReviewedAt || null,
-    source: partial.source === "generated" ? "generated" : "seed",
+    words,
+    lastSavedAt: new Date().toISOString(),
+    recoveredFromBackup: false,
   };
 }
 
-function readStorage() {
-  if (typeof window === "undefined") {
-    return seedWords;
+function wordLibraryReducer(
+  state: WordLibraryState,
+  action: WordLibraryAction,
+): WordLibraryState {
+  if (action.type === "sync") {
+    return action.payload;
   }
 
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-
-  if (!raw) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(seedWords));
-    return seedWords;
+  if (action.type === "add") {
+    return createLocalState(sortWords([action.word, ...state.words]));
   }
 
-  try {
-    const parsed = JSON.parse(raw) as Array<Partial<WordCard>>;
-    return sortWords(parsed.map((item, index) => normalizeWord(item, index)));
-  } catch {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(seedWords));
-    return seedWords;
+  if (action.type === "delete") {
+    return createLocalState(state.words.filter((item) => item.id !== action.id));
   }
+
+  return createLocalState(
+    state.words.map((item) =>
+      item.id === action.id
+        ? {
+            ...item,
+            reviewCount: item.reviewCount + 1,
+            lastReviewedAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          }
+        : item,
+    ),
+  );
 }
 
 export function WordLibraryProvider({ children }: { children: ReactNode }) {
-  const [words, setWords] = useState<WordCard[]>(() => readStorage());
+  const [state, dispatch] = useReducer(wordLibraryReducer, undefined, () =>
+    readWordsFromStorage(),
+  );
+  const { words, lastSavedAt, recoveredFromBackup } = state;
 
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
-    window.localStorage.setItem(
-      BACKUP_KEY,
-      JSON.stringify({
-        exportedAt: new Date().toISOString(),
-        words,
-      }),
-    );
+    saveWordsToStorage(words);
   }, [words]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key !== storageKeys.words || !event.newValue) {
+        return;
+      }
+
+      const nextState = readWordsFromStorage();
+      dispatch({ type: "sync", payload: nextState });
+    };
+
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
 
   const categories = useMemo(() => {
     const values = new Set(words.map((item) => item.category));
@@ -116,11 +130,11 @@ export function WordLibraryProvider({ children }: { children: ReactNode }) {
   }, [words]);
 
   const addWord = useCallback((word: WordCard) => {
-    setWords((current) => sortWords([word, ...current]));
+    dispatch({ type: "add", word });
   }, []);
 
   const deleteWord = useCallback((id: string) => {
-    setWords((current) => current.filter((item) => item.id !== id));
+    dispatch({ type: "delete", id });
   }, []);
 
   const hasWord = useCallback(
@@ -130,18 +144,7 @@ export function WordLibraryProvider({ children }: { children: ReactNode }) {
   );
 
   const markAsReviewed = useCallback((id: string) => {
-    setWords((current) =>
-      current.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              reviewCount: item.reviewCount + 1,
-              lastReviewedAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            }
-          : item,
-      ),
-    );
+    dispatch({ type: "mark-reviewed", id });
   }, []);
 
   const getWordById = useCallback(
@@ -175,6 +178,8 @@ export function WordLibraryProvider({ children }: { children: ReactNode }) {
       words,
       ready: true,
       categories,
+      lastSavedAt,
+      recoveredFromBackup,
       addWord,
       deleteWord,
       hasWord,
@@ -182,7 +187,18 @@ export function WordLibraryProvider({ children }: { children: ReactNode }) {
       getWordById,
       exportLibrary,
     }),
-    [addWord, categories, deleteWord, exportLibrary, getWordById, hasWord, markAsReviewed, words],
+    [
+      addWord,
+      categories,
+      deleteWord,
+      exportLibrary,
+      getWordById,
+      hasWord,
+      lastSavedAt,
+      markAsReviewed,
+      recoveredFromBackup,
+      words,
+    ],
   );
 
   return <WordLibraryContext.Provider value={value}>{children}</WordLibraryContext.Provider>;

@@ -17,14 +17,37 @@ type SettingsModalProps = {
 };
 
 export function SettingsModal({ open, onClose }: SettingsModalProps) {
-  const { settings, setPreferredIndustry, setAppearance } = useUserSettings();
-  const { exportLibrary, words } = useWordLibrary();
+  const {
+    settings,
+    setPreferredIndustry,
+    setAppearance,
+    lastSavedAt: settingsLastSavedAt,
+    recoveredFromBackup: settingsRecoveredFromBackup,
+  } = useUserSettings();
+  const {
+    exportLibrary,
+    lastSavedAt: wordsLastSavedAt,
+    recoveredFromBackup: wordsRecoveredFromBackup,
+    words,
+  } = useWordLibrary();
   const currentIndustry = industryOptions.find(
     (item) => item.value === settings.preferredIndustry,
   );
   const currentAppearance = appearanceOptions.find(
     (item) => item.value === settings.appearance,
   );
+  const latestSavedAt = [wordsLastSavedAt, settingsLastSavedAt]
+    .filter((value): value is string => Boolean(value))
+    .sort((left, right) => new Date(right).getTime() - new Date(left).getTime())[0];
+  const hasRecoveredFromBackup = wordsRecoveredFromBackup || settingsRecoveredFromBackup;
+  const savedTimeLabel = latestSavedAt
+    ? new Intl.DateTimeFormat("zh-CN", {
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        month: "2-digit",
+      }).format(new Date(latestSavedAt))
+    : "刚刚";
 
   useEffect(() => {
     if (!open) {
@@ -156,7 +179,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                   数据安全
                 </p>
                 <p className="text-secondary mt-2 text-sm leading-7">
-                  当前词库仍保存在浏览器本地。建议定期导出备份，下一阶段建议接入云端同步，彻底降低丢失风险。
+                  关键数据会自动写入 localStorage，并保留多份本地滚动备份。主数据异常时，会优先用最近备份自动恢复。
                 </p>
               </div>
               <button
@@ -177,16 +200,22 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
               <div className="theme-modal-stat rounded-[1.4rem] p-4">
                 <p className="text-muted text-sm">保存方式</p>
                 <p className="text-primary mt-2 text-lg font-semibold">
-                  本地持久化
+                  localStorage
                 </p>
               </div>
               <div className="theme-modal-stat rounded-[1.4rem] p-4">
-                <p className="text-muted text-sm">推荐下一步</p>
+                <p className="text-muted text-sm">最近保存</p>
                 <p className="text-primary mt-2 text-lg font-semibold">
-                  云端同步
+                  {savedTimeLabel}
                 </p>
               </div>
             </div>
+            <p className="text-muted mt-4 text-sm leading-7">
+              {hasRecoveredFromBackup
+                ? "检测到最近一次已通过本地备份恢复，当前数据已经重新写回主存储。"
+                : "当前处于自动保存状态，词卡与设置改动会立即写入本地存储。"}{" "}
+              你也可以随时导出一份 JSON 备份。
+            </p>
           </section>
         </div>
       </div>
