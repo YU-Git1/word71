@@ -80,24 +80,24 @@ export function GlobalCaptureBar() {
   };
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-4 z-30 flex justify-center px-4 sm:bottom-5">
+    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center px-4">
       <div className="pointer-events-auto w-full max-w-3xl">
         <form
           onSubmit={handleSubmit}
-          className="theme-panel mx-auto flex items-center gap-3 rounded-[1.8rem] px-4 py-4 shadow-[0_18px_60px_rgba(15,20,27,0.2)] backdrop-blur-xl sm:px-5"
+          className="theme-panel mx-auto flex items-center gap-3 rounded-[1.8rem] border px-4 py-4 shadow-[0_24px_80px_rgba(15,20,27,0.16),0_10px_28px_rgba(120,95,75,0.12)] backdrop-blur-xl sm:px-5"
+          style={{
+            borderColor: "var(--border-strong)",
+          }}
         >
           <div className="min-w-0 flex-1">
-            <p className="accent-text text-[11px] font-semibold uppercase tracking-[0.24em]">
-              随时录入
-            </p>
             <input
               ref={inputRef}
               autoComplete="off"
               value={value}
               onChange={(event) => setValue(event.target.value)}
               onKeyDown={handleInputKeyDown}
-              placeholder="输入单词，回车或点击右侧按钮即可快速生成词卡"
-              className="theme-title mt-2 w-full bg-transparent text-base outline-none placeholder:theme-muted sm:text-lg"
+              placeholder="输入单词，Enter / 点击录入即可生成单词卡"
+              className="theme-title w-full bg-transparent text-base outline-none placeholder:theme-muted sm:text-lg"
               disabled={!ready || submitting}
             />
           </div>

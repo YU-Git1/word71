@@ -60,61 +60,51 @@ export function WordCard({ item, onOpen, onRequestMenu, viewMode }: WordCardProp
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="theme-title text-xl font-semibold">{item.word}</p>
-          <p className="theme-muted mt-1 text-sm">{item.phonetic}</p>
+          <div className="theme-muted mt-2 flex items-center gap-6 text-sm">
+            <p>{item.phonetic}</p>
+            {compact ? <p>{item.partOfSpeech}</p> : null}
+          </div>
         </div>
         <span className="rounded-full px-3 py-1 text-xs font-semibold" style={{ backgroundColor: "var(--accent-soft)", color: "var(--accent-text)" }}>
           {item.category}
         </span>
       </div>
 
-      <div className="theme-body mt-4 flex items-center gap-2 text-sm">
-        <span
-          className="rounded-full px-3 py-1"
-          style={{ backgroundColor: "var(--panel-soft)" }}
-        >
-          {item.partOfSpeech}
-        </span>
-        <span
-          className="rounded-full px-3 py-1"
-          style={{
-            backgroundColor: "color-mix(in srgb, var(--chart-teal) 18%, var(--panel-strong))",
-            color: "var(--chart-teal)",
-          }}
-        >
-          {getIndustryLabel(item.industry)}
-        </span>
-        {item.reviewCount > 0 ? (
-          <span
-            className="rounded-full px-3 py-1"
-            style={{
-              backgroundColor:
-                "color-mix(in srgb, #bbf7d0 20%, var(--panel-strong))",
-              color: "color-mix(in srgb, #166534 75%, var(--text-primary))",
-            }}
-          >
-            已学习 {item.reviewCount} 次
-          </span>
-        ) : (
-          <span
-            className="rounded-full px-3 py-1"
-            style={{
-              backgroundColor:
-                "color-mix(in srgb, #fde68a 24%, var(--panel-strong))",
-              color: "color-mix(in srgb, #92400e 75%, var(--text-primary))",
-            }}
-          >
-            待学习
-          </span>
-        )}
-      </div>
-
       {compact ? (
-        <div className="mt-5 flex items-end justify-between gap-4">
-          <p className="theme-muted line-clamp-1 text-sm">点击卡片进入学习详情</p>
-          <span className="accent-text text-sm font-medium">查看</span>
-        </div>
+        <>
+          <p className="theme-body mt-4 line-clamp-2 text-sm leading-7">{item.meaningZh}</p>
+        </>
       ) : (
         <>
+          <div className="theme-body mt-4 flex items-center gap-2 text-sm">
+            <span
+              className="rounded-full px-3 py-1"
+              style={{ backgroundColor: "var(--panel-soft)" }}
+            >
+              {item.partOfSpeech}
+            </span>
+            <span
+              className="rounded-full px-3 py-1"
+              style={{
+                backgroundColor: "color-mix(in srgb, var(--chart-teal) 18%, var(--panel-strong))",
+                color: "var(--chart-teal)",
+              }}
+            >
+              {getIndustryLabel(item.industry)}
+            </span>
+            {item.reviewCount > 0 ? (
+              <span
+                className="rounded-full px-3 py-1"
+                style={{
+                  backgroundColor:
+                    "color-mix(in srgb, #bbf7d0 20%, var(--panel-strong))",
+                  color: "color-mix(in srgb, #166534 75%, var(--text-primary))",
+                }}
+              >
+                已学习 {item.reviewCount} 次
+              </span>
+            ) : null}
+          </div>
           <p className="theme-body mt-4 line-clamp-3 text-sm leading-7">{item.meaningZh}</p>
 
           <div className="theme-soft-card theme-body mt-5 rounded-[1.2rem] p-4 text-sm leading-7">

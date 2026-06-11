@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SelectMenu } from "@/components/select-menu";
 import { WordDetailModal } from "@/components/word-detail-modal";
 import { useFeedback } from "@/hooks/use-feedback";
 import { useWordLibrary } from "@/hooks/use-word-library";
@@ -115,96 +116,81 @@ export function WordsClient() {
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 py-6 pb-36 sm:px-6 sm:pb-40 lg:px-8">
-        <section className="theme-panel rounded-[2rem] p-6 sm:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="accent-text text-sm font-semibold uppercase tracking-[0.25em]">
-                学习页
-              </p>
-              <h2 className="theme-title mt-2 text-3xl font-semibold sm:text-4xl">
-                筛选后，直接学。
-              </h2>
-              <p className="theme-body mt-3 max-w-xl text-sm leading-7 sm:text-base">
-                搜索、筛选、点开词卡，学习过程尽量一步到位。
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px]">
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="搜索单词、含义或词性"
-                className="theme-input h-14 rounded-[1.2rem] px-4 text-base outline-none transition"
-              />
-              <select
+        <section className="theme-panel rounded-[2rem] p-3">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="grid gap-3 md:min-w-0 md:flex-1 sm:grid-cols-[minmax(0,1fr)_220px]">
+              <div className="theme-input relative flex h-14 items-center rounded-[1.2rem] pl-4 pr-2">
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="搜索单词、含义或词性"
+                  className="h-full min-w-0 flex-1 bg-transparent pr-4 text-base outline-none"
+                />
+                <button
+                  type="button"
+                  aria-label="搜索词卡"
+                  className="rounded-[1rem] px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+                  style={{ backgroundColor: "var(--accent)" }}
+                >
+                  搜索
+                </button>
+              </div>
+              <SelectMenu
                 value={selectedCategory}
-                onChange={(event) => setSelectedCategory(event.target.value)}
-                className="theme-input h-14 rounded-[1.2rem] px-4 text-base outline-none transition"
-              >
-                <option>全部分类</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedCategory}
+                options={[
+                  { value: "全部分类", label: "全部分类" },
+                  ...categories.map((category) => ({
+                    value: category,
+                    label: category,
+                  })),
+                ]}
+                ariaLabel="选择分类"
+              />
             </div>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-            <div className="theme-body flex flex-wrap items-center gap-3 text-sm">
-              <span className="rounded-full px-3 py-2" style={{ backgroundColor: "var(--panel-soft)" }}>
-                当前词卡数 {words.length}
-              </span>
-              <span className="rounded-full px-3 py-2" style={{ backgroundColor: "var(--panel-soft)" }}>
-                匹配结果 {filteredWords.length}
-              </span>
-              <span className="rounded-full px-3 py-2" style={{ backgroundColor: "var(--panel-soft)" }}>
-                分类数 {categories.length}
-              </span>
-            </div>
-
-            <div
-              className="flex items-center gap-1 rounded-full p-1"
-              style={{
-                border: "1px solid var(--border-soft)",
-                backgroundColor: "color-mix(in srgb, var(--panel-strong) 82%, transparent)",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => setViewMode("compact")}
-                className="rounded-full px-4 py-2 text-sm font-semibold transition"
-                style={
-                  viewMode === "compact"
-                    ? {
-                        backgroundColor: "var(--accent)",
-                        color: "#ffffff",
-                      }
-                    : {
-                        color: "var(--text-secondary)",
-                      }
-                }
+            <div className="flex justify-end md:flex-none">
+              <div
+                className="flex items-center gap-1 rounded-full px-1 py-1"
+                style={{
+                  border: "1px solid var(--border-soft)",
+                  backgroundColor: "color-mix(in srgb, var(--panel-strong) 82%, transparent)",
+                }}
               >
-                简约
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode("detailed")}
-                className="rounded-full px-4 py-2 text-sm font-semibold transition"
-                style={
-                  viewMode === "detailed"
-                    ? {
-                        backgroundColor: "var(--accent)",
-                        color: "#ffffff",
-                      }
-                    : {
-                        color: "var(--text-secondary)",
-                      }
-                }
-              >
-                详细
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("compact")}
+                  className="rounded-full px-4 py-2 text-sm font-semibold transition"
+                  style={
+                    viewMode === "compact"
+                      ? {
+                          backgroundColor: "color-mix(in srgb, var(--accent) 20%, transparent)",
+                          color: "var(--accent-text)",
+                        }
+                      : {
+                          color: "var(--text-secondary)",
+                        }
+                  }
+                >
+                  简约
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("detailed")}
+                  className="rounded-full px-4 py-2 text-sm font-semibold transition"
+                  style={
+                    viewMode === "detailed"
+                      ? {
+                          backgroundColor: "color-mix(in srgb, var(--accent) 20%, transparent)",
+                          color: "var(--accent-text)",
+                        }
+                      : {
+                          color: "var(--text-secondary)",
+                        }
+                  }
+                >
+                  详细
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -304,3 +290,4 @@ export function WordsClient() {
     </>
   );
 }
+

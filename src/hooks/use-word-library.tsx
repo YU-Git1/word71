@@ -167,8 +167,13 @@ export function WordLibraryProvider({ children }: { children: ReactNode }) {
       const anchor = document.createElement("a");
       anchor.href = url;
       anchor.download = `vocabulary-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      anchor.style.display = "none";
+      document.body.appendChild(anchor);
       anchor.click();
-      URL.revokeObjectURL(url);
+      window.setTimeout(() => {
+        URL.revokeObjectURL(url);
+        anchor.remove();
+      }, 120);
     },
     [words],
   );

@@ -202,19 +202,7 @@ export function InsightsClient() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 pb-36 sm:px-6 sm:pb-40 lg:px-8">
-      <section className="theme-panel-accent rounded-[2.2rem] p-6 sm:p-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.25em]" style={{ color: "var(--chart-teal)" }}>
-          数据展示页
-        </p>
-        <h2 className="theme-title mt-2 text-3xl font-semibold sm:text-4xl">
-          像健康数据一样看你的词汇积累。
-        </h2>
-        <p className="theme-body mt-4 max-w-3xl text-base leading-8">
-          这里不进行学习动作，只做可视化展示。你能更直观看到学习完成度、录入节奏，以及近阶段的词汇积累趋势。
-        </p>
-      </section>
-
-      <section className="mt-8 grid gap-6 xl:grid-cols-[0.88fr_1.12fr]">
+      <section className="grid gap-6 xl:grid-cols-[0.88fr_1.12fr]">
         <div className="grid gap-6">
           <RingProgress
             value={stats.learned}

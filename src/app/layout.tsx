@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FeedbackToast } from "@/components/feedback-toast";
 import { GlobalCaptureBar } from "@/components/global-capture-bar";
+import { MobileSwipeNav } from "@/components/mobile-swipe-nav";
 import { JetBrains_Mono, Noto_Sans_SC } from "next/font/google";
 import { SiteNav } from "@/components/site-nav";
 import { ThemeSync } from "@/components/theme-sync";
@@ -21,7 +22,7 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "专业词汇库",
+  title: "我的词本",
   description: "一个用于快速录入、卡片学习和数据追踪的个人专业词汇库。",
 };
 
@@ -41,6 +42,7 @@ export default function RootLayout({
             <FeedbackProvider>
               <ThemeSync />
               <div className="app-shell">
+                <MobileSwipeNav />
                 <SiteNav />
                 <GlobalCaptureBar />
                 <FeedbackToast />

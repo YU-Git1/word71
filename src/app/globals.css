@@ -244,3 +244,155 @@ select {
   border: 1px solid var(--border-soft);
   background: var(--modal-stat);
 }
+
+.theme-select-trigger {
+  position: relative;
+  border: 1px solid var(--border-strong);
+  background: var(--panel-strong);
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.theme-select-trigger:focus-visible {
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.theme-modal .theme-select-trigger {
+  background: var(--modal-input);
+}
+
+.theme-select-menu {
+  border: 1px solid var(--border-strong);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 98%, transparent), color-mix(in srgb, var(--panel) 98%, transparent));
+  box-shadow: 0 24px 60px rgba(20, 24, 31, 0.16);
+  backdrop-filter: blur(18px);
+}
+
+.theme-modal .theme-select-menu {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--modal-panel) 98%, transparent), color-mix(in srgb, var(--modal-section) 98%, transparent));
+}
+
+.theme-select-option {
+  color: var(--text-secondary);
+}
+
+.theme-select-option:hover {
+  background: color-mix(in srgb, var(--accent-soft) 76%, transparent);
+  color: var(--text-primary);
+}
+
+.theme-select-option.is-active {
+  background: color-mix(in srgb, var(--accent) 18%, var(--panel-strong));
+  color: var(--accent-text);
+}
+
+:root[data-theme="dark"] .theme-select-option.is-active {
+  background: color-mix(in srgb, var(--accent) 22%, var(--panel-strong));
+  color: var(--accent);
+}
+
+.feedback-toast-enter {
+  animation: feedback-toast-enter 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.feedback-toast-success {
+  animation: feedback-toast-enter 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.feedback-success-badge {
+  animation: feedback-badge-bounce 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feedback-success-glow {
+  background: radial-gradient(circle, rgba(134, 239, 172, 0.42) 0%, rgba(134, 239, 172, 0) 72%);
+  animation: feedback-glow-pulse 0.9s ease-out;
+}
+
+.feedback-success-dot {
+  height: 0.45rem;
+  width: 0.45rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, #22c55e 70%, white);
+  opacity: 0;
+  animation: feedback-success-dot 0.86s ease-out forwards;
+}
+
+.feedback-success-dot.delay-1 {
+  animation-delay: 0.08s;
+}
+
+.feedback-success-dot.delay-2 {
+  animation-delay: 0.14s;
+}
+
+@keyframes feedback-toast-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes feedback-badge-bounce {
+  0% {
+    transform: scale(0.72) rotate(-10deg);
+  }
+
+  55% {
+    transform: scale(1.08) rotate(2deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes feedback-glow-pulse {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.55);
+  }
+
+  45% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scale(1.45);
+  }
+}
+
+@keyframes feedback-success-dot {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.5);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-12px) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-toast-enter,
+  .feedback-toast-success,
+  .feedback-success-badge,
+  .feedback-success-glow,
+  .feedback-success-dot {
+    animation: none !important;
+  }
+}
