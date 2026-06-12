@@ -22,7 +22,7 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "我的词本",
+  title: "我的单词本",
   description: "一个用于快速录入、卡片学习和数据追踪的个人专业词汇库。",
 };
 
