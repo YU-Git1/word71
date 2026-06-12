@@ -13,6 +13,8 @@ type SelectMenuProps<T extends string> = {
   onChange: (value: T) => void;
   ariaLabel: string;
   className?: string;
+  triggerClassName?: string;
+  triggerStyle?: React.CSSProperties;
   menuClassName?: string;
 };
 
@@ -22,6 +24,8 @@ export function SelectMenu<T extends string>({
   onChange,
   ariaLabel,
   className,
+  triggerClassName,
+  triggerStyle,
   menuClassName,
 }: SelectMenuProps<T>) {
   const [open, setOpen] = useState(false);
@@ -68,7 +72,8 @@ export function SelectMenu<T extends string>({
         aria-expanded={open}
         aria-controls={listboxId}
         onClick={() => setOpen((current) => !current)}
-        className="theme-select-trigger h-14 w-full rounded-[1.2rem] pl-4 pr-14 text-left text-base outline-none"
+        className={`theme-select-trigger h-14 w-full rounded-[1.2rem] pl-4 pr-14 text-left text-base outline-none ${triggerClassName ?? ""}`}
+        style={triggerStyle}
       >
         <span className="block truncate">{selectedOption?.label}</span>
         <span

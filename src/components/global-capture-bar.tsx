@@ -97,7 +97,7 @@ export function GlobalCaptureBar() {
   };
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center px-4">
+    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center px-3">
       <div className="pointer-events-auto w-full max-w-3xl">
         <form
           onSubmit={handleSubmit}

@@ -66,9 +66,9 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-modal-title"
-        className="theme-modal relative z-10 max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-[2rem] p-6 sm:p-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="theme-modal relative z-10 flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] p-4 sm:p-8"
       >
-        <div className="flex items-start justify-between gap-5">
+        <div className="flex flex-shrink-0 items-start justify-between gap-5">
           <div>
             <h2 id="settings-modal-title" className="text-primary text-3xl font-semibold">
               设置
@@ -85,7 +85,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
           </button>
         </div>
 
-        <div className="mt-8 grid gap-6">
+        <div className="mt-4 grid flex-1 gap-6 overflow-y-auto pr-1 pb-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <section className="theme-modal-section rounded-[1.6rem] p-5">
             <p className="accent-text text-sm font-semibold uppercase tracking-[0.18em]">
               专业偏好

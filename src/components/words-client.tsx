@@ -22,6 +22,18 @@ export function WordsClient() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const reviewedOpenIdRef = useRef<string | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("search-focus-change", {
+            detail: { active: false },
+          }),
+        );
+      }
+    };
+  }, []);
+
   const filteredWords = useMemo(() => {
     return words.filter((item) => {
       const matchesQuery =
@@ -123,6 +135,24 @@ export function WordsClient() {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
+                  onFocus={() => {
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(
+                        new CustomEvent("search-focus-change", {
+                          detail: { active: true },
+                        }),
+                      );
+                    }
+                  }}
+                  onBlur={() => {
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(
+                        new CustomEvent("search-focus-change", {
+                          detail: { active: false },
+                        }),
+                      );
+                    }
+                  }}
                   placeholder="搜索单词、含义或词性"
                   className="h-full min-w-0 flex-1 bg-transparent pr-4 text-base outline-none"
                 />
@@ -135,7 +165,7 @@ export function WordsClient() {
                   搜索
                 </button>
               </div>
-              <div className="grid items-center gap-3 min-[520px]:grid-cols-[minmax(0,1fr)_auto]">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <SelectMenu
                   value={selectedCategory}
                   onChange={setSelectedCategory}
@@ -147,9 +177,12 @@ export function WordsClient() {
                     })),
                   ]}
                   ariaLabel="选择分类"
+                  className="min-w-0 flex-1"
+                  triggerClassName="rounded-full text-sm font-semibold"
+                  triggerStyle={{ height: "40px" }}
                 />
                 <div
-                  className="flex items-center gap-1 rounded-full px-1 py-1"
+                  className="flex shrink-0 items-center gap-1 self-start rounded-full px-1 py-1"
                   style={{
                     border: "1px solid var(--border-soft)",
                     backgroundColor: "color-mix(in srgb, var(--panel-strong) 82%, transparent)",
