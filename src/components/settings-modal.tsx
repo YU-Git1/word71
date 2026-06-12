@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { industryOptions } from "@/lib/industry";
 import { SelectMenu } from "@/components/select-menu";
+import { useFeedback } from "@/hooks/use-feedback";
 import { useUserSettings } from "@/hooks/use-user-settings";
 import { useWordLibrary } from "@/hooks/use-word-library";
 
@@ -18,6 +19,7 @@ type SettingsModalProps = {
 };
 
 export function SettingsModal({ open, onClose }: SettingsModalProps) {
+  const { showFeedback } = useFeedback();
   const {
     settings,
     setPreferredIndustry,
@@ -86,16 +88,22 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
         <div className="mt-8 grid gap-6">
           <section className="theme-modal-section rounded-[1.6rem] p-5">
             <p className="accent-text text-sm font-semibold uppercase tracking-[0.18em]">
-              领域偏好
+              专业偏好
             </p>
             <SelectMenu
               value={settings.preferredIndustry}
-              onChange={(nextValue) => setPreferredIndustry(nextValue)}
+              onChange={(nextValue) => {
+                setPreferredIndustry(nextValue);
+                showFeedback({
+                  tone: "success",
+                  message: "已保存设置",
+                });
+              }}
               options={industryOptions.map((option) => ({
                 value: option.value,
                 label: option.label,
               }))}
-              ariaLabel="选择领域偏好"
+              ariaLabel="选择专业偏好"
               className="mt-4"
               menuClassName="max-h-64 overflow-y-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             />
@@ -107,7 +115,13 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
             </p>
             <SelectMenu
               value={settings.appearance}
-              onChange={(nextValue) => setAppearance(nextValue)}
+              onChange={(nextValue) => {
+                setAppearance(nextValue);
+                showFeedback({
+                  tone: "success",
+                  message: "已保存设置",
+                });
+              }}
               options={appearanceOptions.map((option) => ({
                 value: option.value,
                 label: option.label,

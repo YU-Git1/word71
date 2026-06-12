@@ -118,7 +118,7 @@ export function WordsClient() {
       <div className="mx-auto max-w-7xl px-4 py-6 pb-36 sm:px-6 sm:pb-40 lg:px-8">
         <section className="theme-panel rounded-[2rem] p-3">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="grid gap-3 md:min-w-0 md:flex-1 sm:grid-cols-[minmax(0,1fr)_220px]">
+            <div className="grid gap-3 md:min-w-0 md:flex-1">
               <div className="theme-input relative flex h-14 items-center rounded-[1.2rem] pl-4 pr-2">
                 <input
                   value={query}
@@ -135,61 +135,61 @@ export function WordsClient() {
                   搜索
                 </button>
               </div>
-              <SelectMenu
-                value={selectedCategory}
-                onChange={setSelectedCategory}
-                options={[
-                  { value: "全部分类", label: "全部分类" },
-                  ...categories.map((category) => ({
-                    value: category,
-                    label: category,
-                  })),
-                ]}
-                ariaLabel="选择分类"
-              />
-            </div>
-            <div className="flex justify-end md:flex-none">
-              <div
-                className="flex items-center gap-1 rounded-full px-1 py-1"
-                style={{
-                  border: "1px solid var(--border-soft)",
-                  backgroundColor: "color-mix(in srgb, var(--panel-strong) 82%, transparent)",
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => setViewMode("compact")}
-                  className="rounded-full px-4 py-2 text-sm font-semibold transition"
-                  style={
-                    viewMode === "compact"
-                      ? {
-                          backgroundColor: "color-mix(in srgb, var(--accent) 20%, transparent)",
-                          color: "var(--accent-text)",
-                        }
-                      : {
-                          color: "var(--text-secondary)",
-                        }
-                  }
+              <div className="grid items-center gap-3 min-[520px]:grid-cols-[minmax(0,1fr)_auto]">
+                <SelectMenu
+                  value={selectedCategory}
+                  onChange={setSelectedCategory}
+                  options={[
+                    { value: "全部分类", label: "全部分类" },
+                    ...categories.map((category) => ({
+                      value: category,
+                      label: category,
+                    })),
+                  ]}
+                  ariaLabel="选择分类"
+                />
+                <div
+                  className="flex items-center gap-1 rounded-full px-1 py-1"
+                  style={{
+                    border: "1px solid var(--border-soft)",
+                    backgroundColor: "color-mix(in srgb, var(--panel-strong) 82%, transparent)",
+                  }}
                 >
-                  简约
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode("detailed")}
-                  className="rounded-full px-4 py-2 text-sm font-semibold transition"
-                  style={
-                    viewMode === "detailed"
-                      ? {
-                          backgroundColor: "color-mix(in srgb, var(--accent) 20%, transparent)",
-                          color: "var(--accent-text)",
-                        }
-                      : {
-                          color: "var(--text-secondary)",
-                        }
-                  }
-                >
-                  详细
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("compact")}
+                    className="rounded-full px-4 py-2 text-sm font-semibold transition"
+                    style={
+                      viewMode === "compact"
+                        ? {
+                            backgroundColor: "color-mix(in srgb, var(--accent) 20%, transparent)",
+                            color: "var(--accent-text)",
+                          }
+                        : {
+                            color: "var(--text-secondary)",
+                          }
+                    }
+                  >
+                    简约
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("detailed")}
+                    className="rounded-full px-4 py-2 text-sm font-semibold transition"
+                    style={
+                      viewMode === "detailed"
+                        ? {
+                            backgroundColor: "color-mix(in srgb, var(--accent) 20%, transparent)",
+                            color: "var(--accent-text)",
+                          }
+                        : {
+                            color: "var(--text-secondary)",
+                          }
+                    }
+                  >
+                    详细
+                  </button>
+                </div>
               </div>
             </div>
           </div>

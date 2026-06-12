@@ -13,13 +13,22 @@ export type UserSettings = {
   appearance: "system" | "light" | "dark";
 };
 
+export type WordMeaning = {
+  id: string;
+  partOfSpeech: string;
+  definitionEn: string;
+  meaningZh: string;
+};
+
 export type WordCard = {
   id: string;
   word: string;
   phonetic: string;
   partOfSpeech: string;
   meaningZh: string;
+  meanings: WordMeaning[];
   exampleSentence: string;
+  exampleSentenceZh: string;
   category: string;
   industry: IndustryOption;
   audioUrl?: string;

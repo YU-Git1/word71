@@ -98,7 +98,22 @@ function normalizeWord(partial: Partial<WordCard>, index: number): WordCard {
     phonetic: partial.phonetic || "/-/",
     partOfSpeech: partial.partOfSpeech || "unknown / 未分类",
     meaningZh: partial.meaningZh || "暂未生成释义。",
+    meanings:
+      partial.meanings?.map((meaning, meaningIndex) => ({
+        id: meaning.id || `meaning-${meaningIndex + 1}`,
+        partOfSpeech: meaning.partOfSpeech || partial.partOfSpeech || "unknown / 未分类",
+        definitionEn: meaning.definitionEn || "",
+        meaningZh: meaning.meaningZh || partial.meaningZh || "暂未生成释义。",
+      })) || [
+        {
+          id: "meaning-1",
+          partOfSpeech: partial.partOfSpeech || "unknown / 未分类",
+          definitionEn: "",
+          meaningZh: partial.meaningZh || "暂未生成释义。",
+        },
+      ],
     exampleSentence: partial.exampleSentence || "No example available yet.",
+    exampleSentenceZh: partial.exampleSentenceZh || "暂未生成例句释义。",
     category: partial.category || "未分类",
     industry: normalizedIndustry,
     audioUrl: partial.audioUrl,

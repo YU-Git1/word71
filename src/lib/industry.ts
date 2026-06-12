@@ -51,3 +51,23 @@ export const industryPromptMap: Record<
 export function getIndustryLabel(value: IndustryOption) {
   return industryPromptMap[value]?.label ?? industryPromptMap.general.label;
 }
+
+const INDUSTRY_KEYWORDS: Record<IndustryOption, string[]> = {
+  general: ["常用", "通用", "一般", "日常", "常见"],
+  uiux: ["界面", "交互", "体验", "设计", "可用性", "视觉", "用户", "产品界面"],
+  frontend: ["前端", "组件", "浏览器", "渲染", "状态", "布局", "页面", "界面开发"],
+  product: ["产品", "需求", "流程", "路线图", "交付", "功能", "协作", "策略"],
+  marketing: ["营销", "传播", "增长", "转化", "受众", "活动", "品牌", "投放"],
+  business: ["商务", "会议", "谈判", "协商", "合作", "执行", "团队", "沟通"],
+};
+
+export function scoreMeaningForIndustry(value: string, industry: IndustryOption) {
+  const keywords = INDUSTRY_KEYWORDS[industry] ?? [];
+  if (industry === "general") {
+    return 0;
+  }
+
+  return keywords.reduce((score, keyword) => {
+    return value.includes(keyword) ? score + 1 : score;
+  }, 0);
+}

@@ -50,7 +50,7 @@ export function WordDetailModal({ word, open, onClose }: WordDetailModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="word-detail-modal-title"
-        className="relative z-10 max-h-[88vh] w-full max-w-5xl overflow-y-auto"
+        className="relative z-10 w-full max-w-5xl"
       >
         <div className="sr-only" id="word-detail-modal-title">
           {word.word} 词卡详情

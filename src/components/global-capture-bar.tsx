@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, KeyboardEvent, useRef, useState } from "react";
+import { FormEvent, KeyboardEvent, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useUserSettings } from "@/hooks/use-user-settings";
 import { useWordLibrary } from "@/hooks/use-word-library";
@@ -18,8 +18,25 @@ export function GlobalCaptureBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [mobileHint, setMobileHint] = useState(false);
 
   const enabled = enabledPaths.some((path) => pathname.startsWith(path));
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 640px)");
+    const syncHint = () => setMobileHint(mediaQuery.matches);
+
+    syncHint();
+    mediaQuery.addEventListener("change", syncHint);
+
+    return () => {
+      mediaQuery.removeEventListener("change", syncHint);
+    };
+  }, []);
 
   if (!enabled) {
     return null;
@@ -96,7 +113,11 @@ export function GlobalCaptureBar() {
               value={value}
               onChange={(event) => setValue(event.target.value)}
               onKeyDown={handleInputKeyDown}
-              placeholder="输入单词，Enter / 点击录入即可生成单词卡"
+              placeholder={
+                mobileHint
+                  ? "输入单词即可生成单词卡"
+                  : "输入单词，Enter / 点击录入即可生成单词卡"
+              }
               className="theme-title w-full bg-transparent text-base outline-none placeholder:theme-muted sm:text-lg"
               disabled={!ready || submitting}
             />

@@ -1,5 +1,5 @@
 import { DEFAULT_CATEGORY } from "@/lib/seed-words";
-import { EnrichedWord, IndustryOption } from "@/types/word";
+import { EnrichedWord, IndustryOption, WordMeaning } from "@/types/word";
 
 type DictionaryApiResponse = Array<{
   word: string;
@@ -100,29 +100,61 @@ export async function enrichWord(
     entry.phonetics?.find((item) => item.text)?.text ||
     "暂无音标";
   const audioUrl = entry.phonetics?.find((item) => item.audio)?.audio;
-  const meaning = entry.meanings?.find((item) => item.definitions?.length);
-  const definition =
-    meaning?.definitions?.find((item) => item.example || item.definition) ||
-    meaning?.definitions?.[0];
+  const rawMeanings = entry.meanings?.filter((item) => item.definitions?.length) ?? [];
 
-  if (!meaning || !definition?.definition) {
+  if (!rawMeanings.length) {
     throw new Error("词典返回的数据不完整，请稍后重试。");
   }
 
-  const translatedMeaning = await createIndustryMeaning(
-    normalizedWord,
-    definition.definition,
-  );
-  const partOfSpeech = meaning.partOfSpeech || "unknown";
-  const partOfSpeechLabel = partOfSpeechMap[partOfSpeech] || "未分类词性";
+  const meaningCandidates = rawMeanings.flatMap((meaning, meaningIndex) => {
+    const partOfSpeech = meaning.partOfSpeech || "unknown";
+    const partOfSpeechLabel = partOfSpeechMap[partOfSpeech] || "未分类词性";
+
+    return (meaning.definitions ?? [])
+      .filter((definition) => definition.definition)
+      .slice(0, 2)
+      .map((definition, definitionIndex) => ({
+        id: `${meaningIndex + 1}-${definitionIndex + 1}`,
+        partOfSpeech: `${partOfSpeech} / ${partOfSpeechLabel}`,
+        definitionEn: definition.definition ?? "",
+        exampleSentence:
+          definition.example || buildFallbackExample(normalizedWord, definition.definition ?? ""),
+      }));
+  });
+
+  if (!meaningCandidates.length) {
+    throw new Error("词典返回的数据不完整，请稍后重试。");
+  }
+
+  const meanings = (await Promise.all(
+    meaningCandidates.map(async (candidate) => {
+      const translatedMeaning = await createIndustryMeaning(
+        normalizedWord,
+        candidate.definitionEn,
+      );
+
+      return {
+        id: candidate.id,
+        partOfSpeech: candidate.partOfSpeech,
+        definitionEn: candidate.definitionEn,
+        meaningZh: translatedMeaning,
+      } satisfies WordMeaning;
+    }),
+  )) as WordMeaning[];
+
+  const primaryMeaning = meanings[0];
+  const primaryExampleSentence = meaningCandidates[0].exampleSentence;
+  const translatedExampleSentence = await translateToChinese(primaryExampleSentence);
+  const partOfSpeech = primaryMeaning.partOfSpeech;
 
   return {
     word: entry.word || normalizedWord,
     phonetic,
-    partOfSpeech: `${partOfSpeech} / ${partOfSpeechLabel}`,
-    meaningZh: translatedMeaning,
-    exampleSentence:
-      definition.example || buildFallbackExample(normalizedWord, definition.definition),
+    partOfSpeech,
+    meaningZh: primaryMeaning.meaningZh,
+    meanings,
+    exampleSentence: primaryExampleSentence,
+    exampleSentenceZh: translatedExampleSentence,
     category: DEFAULT_CATEGORY,
     industry,
     audioUrl,

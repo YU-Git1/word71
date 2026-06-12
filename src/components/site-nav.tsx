@@ -26,11 +26,11 @@ export function SiteNav() {
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div>
-            <h1 className="text-primary text-lg font-semibold">我的词本</h1>
+            <h1 className="text-primary text-lg font-semibold">我的单词卡</h1>
           </div>
           <div className="flex items-center gap-6">
             <nav
-              className="flex items-center gap-6 rounded-full px-2 py-1.5"
+              className="flex items-center gap-6 rounded-full px-2 py-1"
               style={{
                 backgroundColor: "color-mix(in srgb, var(--panel-strong) 48%, transparent)",
               }}
@@ -57,7 +57,7 @@ export function SiteNav() {
                     {active ? (
                       <span
                         aria-hidden="true"
-                        className="absolute left-1/2 top-full h-1 w-6 -translate-x-1/2 rounded-full"
+                        className="absolute left-1/2 top-[calc(100%_-_4px)] h-1 w-6 -translate-x-1/2 rounded-full"
                         style={{
                           backgroundColor: "var(--accent)",
                         }}
@@ -105,3 +105,4 @@ export function SiteNav() {
     </>
   );
 }
+

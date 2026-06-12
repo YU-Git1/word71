@@ -89,61 +89,6 @@ function Sparkline({
   );
 }
 
-function RingProgress({
-  value,
-  total,
-  color,
-  label,
-}: {
-  value: number;
-  total: number;
-  color: string;
-  label: string;
-}) {
-  const safeTotal = Math.max(total, 1);
-  const percent = Math.min(value / safeTotal, 1);
-  const radius = 68;
-  const circumference = 2 * Math.PI * radius;
-  const dashOffset = circumference * (1 - percent);
-
-  return (
-    <div className="theme-panel rounded-[2rem] p-6">
-      <p className="theme-muted text-sm font-semibold uppercase tracking-[0.22em]">{label}</p>
-      <div className="mt-4 flex items-center justify-center">
-        <div className="relative h-44 w-44">
-          <svg viewBox="0 0 180 180" className="h-full w-full -rotate-90">
-            <circle
-              cx="90"
-              cy="90"
-              r={radius}
-              stroke="var(--chart-track)"
-              strokeWidth="14"
-              fill="none"
-            />
-            <circle
-              cx="90"
-              cy="90"
-              r={radius}
-              stroke={color}
-              strokeWidth="14"
-              fill="none"
-              strokeLinecap="round"
-              strokeDasharray={circumference}
-              strokeDashoffset={dashOffset}
-            />
-          </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <p className="theme-title text-4xl font-semibold">{Math.round(percent * 100)}%</p>
-            <p className="theme-muted mt-1 text-sm">
-              {value} / {total}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function InsightsClient() {
   const { words, ready } = useWordLibrary();
 
@@ -202,40 +147,31 @@ export function InsightsClient() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 pb-36 sm:px-6 sm:pb-40 lg:px-8">
-      <section className="grid gap-6 xl:grid-cols-[0.88fr_1.12fr]">
-        <div className="grid gap-6">
-          <RingProgress
-            value={stats.learned}
-            total={stats.total}
-            color="var(--chart-teal)"
-            label="词卡学习完成度"
-          />
-
-          <div className="theme-panel rounded-[2rem] p-6">
-            <h3 className="theme-title text-xl font-semibold">学习状态</h3>
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              <div className="theme-soft-card rounded-[1.4rem] p-4">
-                <p className="theme-muted text-sm">总词数</p>
-                <p className="theme-title mt-2 text-3xl font-semibold">{stats.total}</p>
-              </div>
-              <div
-                className="rounded-[1.4rem] p-4"
-                style={{
-                  backgroundColor:
-                    "color-mix(in srgb, var(--chart-teal) 18%, var(--panel-strong))",
-                }}
-              >
-                <p className="text-sm" style={{ color: "var(--chart-teal)" }}>已学习</p>
-                <p className="mt-2 text-3xl font-semibold" style={{ color: "var(--chart-teal)" }}>
-                  {stats.learned}
-                </p>
-              </div>
-              <div className="rounded-[1.4rem] p-4" style={{ backgroundColor: "var(--accent-soft)" }}>
-                <p className="text-sm" style={{ color: "var(--accent-text)" }}>待学习</p>
-                <p className="mt-2 text-3xl font-semibold" style={{ color: "var(--accent-text)" }}>
-                  {Math.max(stats.total - stats.learned, 0)}
-                </p>
-              </div>
+      <section className="grid gap-6">
+        <div className="theme-panel rounded-[2rem] p-6">
+          <h3 className="theme-title text-xl font-semibold">学习状态</h3>
+          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            <div className="theme-soft-card rounded-[1.4rem] p-4">
+              <p className="theme-muted text-sm">总词数</p>
+              <p className="theme-title mt-2 text-3xl font-semibold">{stats.total}</p>
+            </div>
+            <div
+              className="rounded-[1.4rem] p-4"
+              style={{
+                backgroundColor:
+                  "color-mix(in srgb, var(--chart-teal) 18%, var(--panel-strong))",
+              }}
+            >
+              <p className="text-sm" style={{ color: "var(--chart-teal)" }}>已学习</p>
+              <p className="mt-2 text-3xl font-semibold" style={{ color: "var(--chart-teal)" }}>
+                {stats.learned}
+              </p>
+            </div>
+            <div className="rounded-[1.4rem] p-4" style={{ backgroundColor: "var(--accent-soft)" }}>
+              <p className="text-sm" style={{ color: "var(--accent-text)" }}>待学习</p>
+              <p className="mt-2 text-3xl font-semibold" style={{ color: "var(--accent-text)" }}>
+                {Math.max(stats.total - stats.learned, 0)}
+              </p>
             </div>
           </div>
         </div>
@@ -244,9 +180,6 @@ export function InsightsClient() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <h3 className="theme-title text-2xl font-semibold">近阶段录入趋势</h3>
-              <p className="theme-body mt-2 text-sm leading-7">
-                用健康应用常见的趋势折线来展示你的节奏变化。
-              </p>
             </div>
             <div className="flex gap-3">
               <div
@@ -299,9 +232,6 @@ export function InsightsClient() {
       <section className="mt-8 grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
         <div className="theme-panel rounded-[2rem] p-6">
           <h3 className="theme-title text-2xl font-semibold">月度积累曲线</h3>
-          <p className="theme-body mt-2 text-sm leading-7">
-            这部分更适合看长期词汇增长，而不是只看数字表格。
-          </p>
           <div
             className="mt-6 rounded-[1.8rem] p-4"
             style={{
@@ -329,9 +259,7 @@ export function InsightsClient() {
         <div className="theme-panel rounded-[2rem] p-6">
           <h3 className="theme-title text-2xl font-semibold">已学词汇清单</h3>
           {stats.learnedWords.length === 0 ? (
-            <p className="theme-body mt-4 text-sm leading-7">
-              你还没有点开过词卡详情页，去学习页点几张卡片后，这里就会出现学习记录。
-            </p>
+            <p className="theme-body mt-4 text-sm leading-7">暂无学习记录。</p>
           ) : (
             <div className="mt-6 flex flex-wrap gap-3">
               {stats.learnedWords.map((item) => (

@@ -265,15 +265,13 @@ select {
 
 .theme-select-menu {
   border: 1px solid var(--border-strong);
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--panel-strong) 98%, transparent), color-mix(in srgb, var(--panel) 98%, transparent));
+  background: color-mix(in srgb, var(--panel-strong) 99%, white 1%);
   box-shadow: 0 24px 60px rgba(20, 24, 31, 0.16);
   backdrop-filter: blur(18px);
 }
 
 .theme-modal .theme-select-menu {
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--modal-panel) 98%, transparent), color-mix(in srgb, var(--modal-section) 98%, transparent));
+  background: color-mix(in srgb, var(--modal-panel) 99%, white 1%);
 }
 
 .theme-select-option {
@@ -327,6 +325,27 @@ select {
 
 .feedback-success-dot.delay-2 {
   animation-delay: 0.14s;
+}
+
+.word-audio-button.is-playing {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.word-audio-icon.is-playing {
+  animation: word-audio-pulse 0.95s ease-in-out infinite;
+}
+
+@keyframes word-audio-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.72;
+    transform: scale(1.08);
+  }
 }
 
 @keyframes feedback-toast-enter {
@@ -392,7 +411,8 @@ select {
   .feedback-toast-success,
   .feedback-success-badge,
   .feedback-success-glow,
-  .feedback-success-dot {
+  .feedback-success-dot,
+  .word-audio-icon.is-playing {
     animation: none !important;
   }
 }
