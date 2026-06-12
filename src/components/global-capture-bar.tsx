@@ -19,6 +19,7 @@ export function GlobalCaptureBar() {
   const [value, setValue] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [mobileHint, setMobileHint] = useState(false);
+  const [searchActive, setSearchActive] = useState(false);
 
   const enabled = enabledPaths.some((path) => pathname.startsWith(path));
 
@@ -38,9 +39,31 @@ export function GlobalCaptureBar() {
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const handleSearchFocusChange = (event: Event) => {
+      const customEvent = event as CustomEvent<{ active?: boolean }>;
+      setSearchActive(Boolean(customEvent.detail?.active));
+    };
+
+    window.addEventListener("search-focus-change", handleSearchFocusChange as EventListener);
+
+    return () => {
+      window.removeEventListener(
+        "search-focus-change",
+        handleSearchFocusChange as EventListener,
+      );
+    };
+  }, []);
+
   if (!enabled) {
     return null;
   }
+
+  const hiddenOnMobile = mobileHint && searchActive;
 
   const submitWord = async () => {
     const nextValue = value.trim();
@@ -97,8 +120,16 @@ export function GlobalCaptureBar() {
   };
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center px-3">
-      <div className="pointer-events-auto w-full max-w-3xl">
+    <div
+      className={`pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center px-3 transition-all duration-200 ease-out ${
+        hiddenOnMobile ? "translate-y-6 opacity-0" : "translate-y-0 opacity-100"
+      }`}
+    >
+      <div
+        className={`w-full max-w-3xl transition-transform duration-200 ease-out ${
+          hiddenOnMobile ? "pointer-events-none scale-[0.98]" : "pointer-events-auto scale-100"
+        }`}
+      >
         <form
           onSubmit={handleSubmit}
           className="theme-panel mx-auto flex items-center gap-3 rounded-[1.8rem] border px-4 py-4 shadow-[0_24px_80px_rgba(15,20,27,0.16),0_10px_28px_rgba(120,95,75,0.12)] backdrop-blur-xl sm:px-5"
