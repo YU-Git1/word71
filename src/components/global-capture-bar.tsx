@@ -20,6 +20,9 @@ export function GlobalCaptureBar() {
   const [submitting, setSubmitting] = useState(false);
   const [mobileHint, setMobileHint] = useState(false);
   const [searchActive, setSearchActive] = useState(false);
+  const [scrollHidden, setScrollHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const resumeTimerRef = useRef<number | null>(null);
 
   const enabled = enabledPaths.some((path) => pathname.startsWith(path));
 
@@ -36,6 +39,49 @@ export function GlobalCaptureBar() {
 
     return () => {
       mediaQuery.removeEventListener("change", syncHint);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const clearResumeTimer = () => {
+      if (resumeTimerRef.current) {
+        window.clearTimeout(resumeTimerRef.current);
+        resumeTimerRef.current = null;
+      }
+    };
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const delta = Math.abs(currentScrollY - lastScrollYRef.current);
+
+      if (currentScrollY <= 8) {
+        setScrollHidden(false);
+        clearResumeTimer();
+        lastScrollYRef.current = currentScrollY;
+        return;
+      }
+
+      if (delta > 6) {
+        setScrollHidden(true);
+        lastScrollYRef.current = currentScrollY;
+      }
+
+      clearResumeTimer();
+      resumeTimerRef.current = window.setTimeout(() => {
+        setScrollHidden(false);
+      }, 300);
+    };
+
+    lastScrollYRef.current = window.scrollY;
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      clearResumeTimer();
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -63,7 +109,7 @@ export function GlobalCaptureBar() {
     return null;
   }
 
-  const hiddenOnMobile = mobileHint && searchActive;
+  const hiddenOnMobile = (mobileHint && searchActive) || scrollHidden;
 
   const submitWord = async () => {
     const nextValue = value.trim();
@@ -121,14 +167,26 @@ export function GlobalCaptureBar() {
 
   return (
     <div
-      className={`pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center px-3 transition-all duration-200 ease-out ${
-        hiddenOnMobile ? "translate-y-6 opacity-0" : "translate-y-0 opacity-100"
+      className={`pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center px-3 transition-all duration-300 ${
+        hiddenOnMobile ? "translate-y-10 opacity-0" : "translate-y-0 opacity-100"
       }`}
+      style={{
+        transitionTimingFunction: hiddenOnMobile
+          ? "cubic-bezier(0.4, 0, 1, 1)"
+          : "cubic-bezier(0.22, 1, 0.36, 1)",
+      }}
     >
       <div
-        className={`w-full max-w-3xl transition-transform duration-200 ease-out ${
-          hiddenOnMobile ? "pointer-events-none scale-[0.98]" : "pointer-events-auto scale-100"
+        className={`w-full max-w-3xl transition-all duration-300 ${
+          hiddenOnMobile
+            ? "pointer-events-none scale-[0.97] opacity-0"
+            : "pointer-events-auto scale-100 opacity-100"
         }`}
+        style={{
+          transitionTimingFunction: hiddenOnMobile
+            ? "cubic-bezier(0.4, 0, 1, 1)"
+            : "cubic-bezier(0.22, 1, 0.36, 1)",
+        }}
       >
         <form
           onSubmit={handleSubmit}

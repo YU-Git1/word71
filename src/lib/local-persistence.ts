@@ -141,6 +141,10 @@ function normalizeSettings(
       partial?.appearance === "system"
         ? partial.appearance
         : defaultSettings.appearance,
+    cardViewMode:
+      partial?.cardViewMode === "compact" || partial?.cardViewMode === "detailed"
+        ? partial.cardViewMode
+        : defaultSettings.cardViewMode,
   } satisfies UserSettings;
 }
 

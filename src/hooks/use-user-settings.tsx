@@ -18,6 +18,7 @@ import { IndustryOption, UserSettings } from "@/types/word";
 const defaultSettings: UserSettings = {
   preferredIndustry: "uiux",
   appearance: "system",
+  cardViewMode: "compact",
 };
 
 type UserSettingsState = {
@@ -29,6 +30,7 @@ type UserSettingsState = {
 type UserSettingsAction =
   | { type: "set-industry"; preferredIndustry: IndustryOption }
   | { type: "set-appearance"; appearance: UserSettings["appearance"] }
+  | { type: "set-card-view-mode"; cardViewMode: UserSettings["cardViewMode"] }
   | { type: "sync"; payload: UserSettingsState };
 
 type UserSettingsContextValue = {
@@ -37,6 +39,7 @@ type UserSettingsContextValue = {
   recoveredFromBackup: boolean;
   setPreferredIndustry: (preferredIndustry: IndustryOption) => void;
   setAppearance: (appearance: UserSettings["appearance"]) => void;
+  setCardViewMode: (cardViewMode: UserSettings["cardViewMode"]) => void;
 };
 
 const UserSettingsContext = createContext<UserSettingsContextValue | null>(null);
@@ -61,6 +64,13 @@ function userSettingsReducer(
     return createLocalSettingsState({
       ...state.settings,
       preferredIndustry: action.preferredIndustry,
+    });
+  }
+
+  if (action.type === "set-card-view-mode") {
+    return createLocalSettingsState({
+      ...state.settings,
+      cardViewMode: action.cardViewMode,
     });
   }
 
@@ -115,6 +125,9 @@ export function UserSettingsProvider({ children }: { children: ReactNode }) {
       },
       setAppearance: (appearance) => {
         dispatch({ type: "set-appearance", appearance });
+      },
+      setCardViewMode: (cardViewMode) => {
+        dispatch({ type: "set-card-view-mode", cardViewMode });
       },
     }),
     [lastSavedAt, recoveredFromBackup, settings],

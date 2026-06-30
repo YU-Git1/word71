@@ -13,6 +13,11 @@ const appearanceOptions = [
   { value: "dark", label: "深色" },
 ] as const;
 
+const cardViewModeOptions = [
+  { value: "compact", label: "简约" },
+  { value: "detailed", label: "详细" },
+] as const;
+
 type SettingsModalProps = {
   open: boolean;
   onClose: () => void;
@@ -24,6 +29,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
     settings,
     setPreferredIndustry,
     setAppearance,
+    setCardViewMode,
   } = useUserSettings();
   const {
     exportLibrary,
@@ -127,6 +133,28 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                 label: option.label,
               }))}
               ariaLabel="选择外观设置"
+              className="mt-4"
+            />
+          </section>
+
+          <section className="theme-modal-section rounded-[1.6rem] p-5">
+            <p className="accent-text text-sm font-semibold uppercase tracking-[0.18em]">
+              卡片模式
+            </p>
+            <SelectMenu
+              value={settings.cardViewMode}
+              onChange={(nextValue) => {
+                setCardViewMode(nextValue);
+                showFeedback({
+                  tone: "success",
+                  message: "已保存设置",
+                });
+              }}
+              options={cardViewModeOptions.map((option) => ({
+                value: option.value,
+                label: option.label,
+              }))}
+              ariaLabel="选择卡片模式"
               className="mt-4"
             />
           </section>

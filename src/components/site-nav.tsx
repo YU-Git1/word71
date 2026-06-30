@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SettingsModal } from "@/components/settings-modal";
@@ -13,15 +13,68 @@ const navigationItems = [
 export function SiteNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollYRef = useRef(0);
+  const resumeTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const clearResumeTimer = () => {
+      if (resumeTimerRef.current) {
+        window.clearTimeout(resumeTimerRef.current);
+        resumeTimerRef.current = null;
+      }
+    };
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const delta = Math.abs(currentScrollY - lastScrollYRef.current);
+
+      if (currentScrollY <= 8) {
+        setHidden(false);
+        clearResumeTimer();
+        lastScrollYRef.current = currentScrollY;
+        return;
+      }
+
+      if (delta > 6) {
+        setHidden(true);
+        lastScrollYRef.current = currentScrollY;
+      }
+
+      clearResumeTimer();
+      resumeTimerRef.current = window.setTimeout(() => {
+        setHidden(false);
+      }, 300);
+    };
+
+    lastScrollYRef.current = window.scrollY;
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      clearResumeTimer();
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <>
       <header
-        className="sticky top-0 z-20 border-b backdrop-blur-xl"
+        className={`sticky top-0 z-20 border-b backdrop-blur-xl transition-all duration-300 ${
+          hidden
+            ? "-translate-y-full opacity-0"
+            : "translate-y-0 opacity-100"
+        }`}
         style={{
           borderColor: "var(--border-soft)",
           backgroundColor: "color-mix(in srgb, var(--panel-strong) 82%, transparent)",
           boxShadow: "0 10px 28px rgba(120,95,75,0.08)",
+          transitionTimingFunction: hidden
+            ? "cubic-bezier(0.4, 0, 1, 1)"
+            : "cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">

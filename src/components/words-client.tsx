@@ -4,15 +4,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SelectMenu } from "@/components/select-menu";
 import { WordDetailModal } from "@/components/word-detail-modal";
 import { useFeedback } from "@/hooks/use-feedback";
+import { useUserSettings } from "@/hooks/use-user-settings";
 import { useWordLibrary } from "@/hooks/use-word-library";
 import { WordCard } from "@/components/word-card";
 
 export function WordsClient() {
   const { words, categories, ready, getWordById, markAsReviewed, deleteWord } = useWordLibrary();
   const { showFeedback } = useFeedback();
+  const { settings } = useUserSettings();
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("全部分类");
-  const [viewMode, setViewMode] = useState<"compact" | "detailed">("compact");
   const [selectedWordId, setSelectedWordId] = useState<string | null>(null);
   const [menuState, setMenuState] = useState<{
     id: string;
@@ -181,48 +182,6 @@ export function WordsClient() {
                   triggerClassName="rounded-full text-sm font-semibold"
                   triggerStyle={{ height: "40px" }}
                 />
-                <div
-                  className="flex shrink-0 items-center gap-1 self-start rounded-full px-1 py-1"
-                  style={{
-                    border: "1px solid var(--border-soft)",
-                    backgroundColor: "color-mix(in srgb, var(--panel-strong) 82%, transparent)",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setViewMode("compact")}
-                    className="rounded-full px-4 py-2 text-sm font-semibold transition"
-                    style={
-                      viewMode === "compact"
-                        ? {
-                            backgroundColor: "color-mix(in srgb, var(--accent) 20%, transparent)",
-                            color: "var(--accent-text)",
-                          }
-                        : {
-                            color: "var(--text-secondary)",
-                          }
-                    }
-                  >
-                    简约
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setViewMode("detailed")}
-                    className="rounded-full px-4 py-2 text-sm font-semibold transition"
-                    style={
-                      viewMode === "detailed"
-                        ? {
-                            backgroundColor: "color-mix(in srgb, var(--accent) 20%, transparent)",
-                            color: "var(--accent-text)",
-                          }
-                        : {
-                            color: "var(--text-secondary)",
-                          }
-                    }
-                  >
-                    详细
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -247,7 +206,7 @@ export function WordsClient() {
                 item={item}
                 onOpen={openWord}
                 onRequestMenu={requestMenu}
-                viewMode={viewMode}
+                viewMode={settings.cardViewMode}
               />
             ))}
           </section>

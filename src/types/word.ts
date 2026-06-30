@@ -11,6 +11,7 @@ export type IndustryOption =
 export type UserSettings = {
   preferredIndustry: IndustryOption;
   appearance: "system" | "light" | "dark";
+  cardViewMode: "compact" | "detailed";
 };
 
 export type WordMeaning = {
